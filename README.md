@@ -77,3 +77,8 @@ The built image tag will be:
 ```
 ghcr.io/gmcouto/gmcouto-code-server-docker-mods:code-server-ai-tools
 ```
+
+My personal DOCKER_MODS value:
+```
+DOCKER_MODS=linuxserver/mods:code-server-nodejs|linuxserver/mods:code-server-nvm|linuxserver/mods:universal-docker|linuxserver/mods:code-server-python3|ghcr.io/gmcouto/gmcouto-code-server-docker-mods:code-server-ai-tools
+```

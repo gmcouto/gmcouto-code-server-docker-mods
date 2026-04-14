@@ -55,25 +55,28 @@ fi
 
 # ---------------------------------------------------------------------------
 # cursor CLI  (https://cursor.com/docs/cli/installation)
+# The installer places cursor-agent (and a cursor wrapper) in ~/.local/bin/
 # ---------------------------------------------------------------------------
-if command -v cursor &>/dev/null; then
-    echo "**** cursor CLI already installed, skipping ****"
+if command -v cursor-agent &>/dev/null; then
+    echo "**** cursor-agent CLI already installed, skipping ****"
 else
     echo "**** installing cursor CLI ****"
     CURSOR_INSTALL_SCRIPT="$(mktemp /tmp/cursor-install-XXXXXX.sh)"
     if curl -fsSL -o "${CURSOR_INSTALL_SCRIPT}" https://cursor.com/install; then
         bash "${CURSOR_INSTALL_SCRIPT}"
         rm -f "${CURSOR_INSTALL_SCRIPT}"
-        # The installer places the binary under ~/.cursor/bin; symlink into PATH
-        CURSOR_BIN_DIR="${HOME}/.cursor/bin"
-        if [ -f "${CURSOR_BIN_DIR}/cursor" ] && [ ! -f /usr/local/bin/cursor ]; then
-            if ln -sf "${CURSOR_BIN_DIR}/cursor" /usr/local/bin/cursor; then
-                echo "**** cursor CLI symlinked to /usr/local/bin/cursor ****"
-            else
-                echo "**** warning: could not create /usr/local/bin/cursor symlink ****"
-                echo "**** cursor binary is available at ${CURSOR_BIN_DIR}/cursor ****"
+        # The installer places binaries under ~/.local/bin; symlink both into PATH
+        CURSOR_LOCAL_BIN="${HOME}/.local/bin"
+        for binary in cursor-agent cursor; do
+            if [ -f "${CURSOR_LOCAL_BIN}/${binary}" ]; then
+                if ln -sf "${CURSOR_LOCAL_BIN}/${binary}" "/usr/local/bin/${binary}"; then
+                    echo "**** ${binary} symlinked to /usr/local/bin/${binary} ****"
+                else
+                    echo "**** warning: could not create /usr/local/bin/${binary} symlink ****"
+                    echo "**** ${binary} binary is available at ${CURSOR_LOCAL_BIN}/${binary} ****"
+                fi
             fi
-        fi
+        done
     else
         rm -f "${CURSOR_INSTALL_SCRIPT}"
         echo "**** cursor CLI installation failed – skipping ****"
