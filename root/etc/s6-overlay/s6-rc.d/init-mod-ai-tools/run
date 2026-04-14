@@ -1,0 +1,83 @@
+#!/usr/bin/with-contenv bash
+
+echo "**** installing AI CLI tools ****"
+
+# ---------------------------------------------------------------------------
+# Locate npm
+# Priority: system npm (code-server-nodejs mod) → NVM-managed npm
+# ---------------------------------------------------------------------------
+NPM_BIN=""
+
+if command -v npm &>/dev/null; then
+    NPM_BIN="npm"
+elif [ -s "${HOME}/.nvm/nvm.sh" ]; then
+    # shellcheck source=/dev/null
+    source "${HOME}/.nvm/nvm.sh"
+    if command -v npm &>/dev/null; then
+        NPM_BIN="npm"
+    fi
+fi
+
+if [ -z "${NPM_BIN}" ]; then
+    echo "**** npm not found – skipping npm-based installations ****"
+    echo "**** Make sure code-server-nodejs or code-server-nvm mod is loaded ****"
+else
+    # -----------------------------------------------------------------------
+    # gemini-cli  (https://github.com/google-gemini/gemini-cli)
+    # -----------------------------------------------------------------------
+    echo "**** installing / updating gemini-cli ****"
+    ${NPM_BIN} install -g @google/gemini-cli
+
+    # -----------------------------------------------------------------------
+    # claude-code  (https://github.com/anthropics/claude-code)
+    # -----------------------------------------------------------------------
+    echo "**** installing / updating claude-code ****"
+    ${NPM_BIN} install -g @anthropic-ai/claude-code
+
+    # -----------------------------------------------------------------------
+    # openclaude  (https://github.com/Gitlawb/openclaude)
+    # -----------------------------------------------------------------------
+    echo "**** installing / updating openclaude ****"
+    ${NPM_BIN} install -g @gitlawb/openclaude
+
+    # -----------------------------------------------------------------------
+    # github-copilot-cli  (https://github.com/github/copilot-cli)
+    # -----------------------------------------------------------------------
+    echo "**** installing / updating github copilot CLI ****"
+    ${NPM_BIN} install -g @github/copilot
+
+    # -----------------------------------------------------------------------
+    # codex CLI  (https://github.com/openai/codex)
+    # -----------------------------------------------------------------------
+    echo "**** installing / updating openai codex CLI ****"
+    ${NPM_BIN} install -g @openai/codex
+fi
+
+# ---------------------------------------------------------------------------
+# cursor CLI  (https://cursor.com/docs/cli/installation)
+# ---------------------------------------------------------------------------
+if command -v cursor &>/dev/null; then
+    echo "**** cursor CLI already installed, skipping ****"
+else
+    echo "**** installing cursor CLI ****"
+    CURSOR_INSTALL_SCRIPT="$(mktemp /tmp/cursor-install-XXXXXX.sh)"
+    if curl -fsSL -o "${CURSOR_INSTALL_SCRIPT}" https://cursor.com/install; then
+        bash "${CURSOR_INSTALL_SCRIPT}"
+        rm -f "${CURSOR_INSTALL_SCRIPT}"
+        # The installer places the binary under ~/.cursor/bin; symlink into PATH
+        CURSOR_BIN_DIR="${HOME}/.cursor/bin"
+        if [ -f "${CURSOR_BIN_DIR}/cursor" ] && [ ! -f /usr/local/bin/cursor ]; then
+            if ln -sf "${CURSOR_BIN_DIR}/cursor" /usr/local/bin/cursor; then
+                echo "**** cursor CLI symlinked to /usr/local/bin/cursor ****"
+            else
+                echo "**** warning: could not create /usr/local/bin/cursor symlink ****"
+                echo "**** cursor binary is available at ${CURSOR_BIN_DIR}/cursor ****"
+            fi
+        fi
+    else
+        rm -f "${CURSOR_INSTALL_SCRIPT}"
+        echo "**** cursor CLI installation failed – skipping ****"
+    fi
+fi
+
+echo "**** AI CLI tools installation complete ****"
