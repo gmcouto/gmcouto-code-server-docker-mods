@@ -2,7 +2,15 @@
 
 A [Docker Mod](https://github.com/linuxserver/docker-mods) for the
 [linuxserver/code-server](https://hub.docker.com/r/linuxserver/code-server) container that
-installs the following AI CLI tools on every container start:
+installs the following tools on every container start:
+
+### Terminal utilities
+
+| Tool | Package | Description |
+|---|---|---|
+| [tmux](https://github.com/tmux/tmux) | `apt` | Terminal multiplexer for persistent terminal sessions |
+
+### AI CLI tools
 
 | Tool | Package | Description |
 |---|---|---|
