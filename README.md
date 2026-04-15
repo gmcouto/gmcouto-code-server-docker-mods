@@ -77,3 +77,40 @@ Add the following to your `~/.bashrc` so tmux command works as expected:
 # tmux: wrap in script to allocate a PTY when running from a web shell
 tmux() { script -q -c "tmux $*" /dev/null; }
 ```
+
+## Stop Copilot Chat extension from nagging you
+Run this in the browser console with `code-server` tab open, then restart the page:
+```js
+  (async () => {                                                  
+    const DB_NAME = 'vscode-web-state-db-global';
+    const STORE = 'ItemTable';
+                                                                                                                                            
+    const db = await new Promise((res, rej) => {
+      const req = indexedDB.open(DB_NAME);                                                                                                  
+      req.onsuccess = () => res(req.result);                                                                                                
+      req.onerror = () => rej(req.error);
+    });                                                                                                                                     
+                                                                  
+    // Read existing value, merge completed:true into it                                                                                    
+    const existing = await new Promise((res, rej) => {            
+      const tx = db.transaction(STORE, 'readonly');                                                                                         
+      const get = tx.objectStore(STORE).get('chat.setupContext');
+      get.onsuccess = () => res(get.result ? JSON.parse(get.result) : {});                                                                  
+      get.onerror = () => rej(get.error);                                                                                                   
+    });                                                                                                                                     
+                                                                                                                                            
+    const tx = db.transaction(STORE, 'readwrite');                                                                                          
+    const store = tx.objectStore(STORE);                          
+                                                                                                                                            
+    store.put(JSON.stringify({ ...existing, completed: true }), 'chat.setupContext');
+    store.put('true', 'chat.setupContext.migrated.v1');
+                                                                                                                                            
+    await new Promise((res, rej) => {
+      tx.oncomplete = res;                                                                                                                  
+      tx.onerror = () => rej(tx.error);                           
+    });
+                                                                                                                                            
+    console.log('Done! Reload the page.');
+    db.close();                                                                                                                             
+  })();
+```
