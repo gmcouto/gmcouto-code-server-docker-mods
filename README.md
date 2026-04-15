@@ -1,4 +1,4 @@
-# gmcouto-code-server-docker-mods
+# code-server-ai-tools
 
 A [Docker Mod](https://github.com/linuxserver/docker-mods) for the
 [linuxserver/code-server](https://hub.docker.com/r/linuxserver/code-server) container that
@@ -28,7 +28,7 @@ installs the following tools on every container start:
 
 ## Usage
 
-Just add the image of this repo `ghcr.io/gmcouto/gmcouto-code-server-docker-mods:code-server-ai-tools` to the `DOCKER_MODS` of your container environment variable. You can do it either on to your `docker run` or `docker-compose.yml`:
+Just add this repo's image, `ghcr.io/gmcouto/code-server-ai-tools:latest`, to your container's `DOCKER_MODS` environment variable. You can do this either in your `docker run` command or in `docker-compose.yml`:
 
 ### docker run
 
@@ -38,7 +38,7 @@ docker run -d \
   -e PUID=1000 \
   -e PGID=1000 \
   -e TZ=Etc/UTC \
-  -e DOCKER_MODS=linuxserver/mods:code-server-nodejs|ghcr.io/gmcouto/gmcouto-code-server-docker-mods:code-server-ai-tools \
+  -e DOCKER_MODS=linuxserver/mods:code-server-nodejs|ghcr.io/gmcouto/code-server-ai-tools:latest \
   -p 8443:8443 \
   -v /path/to/config:/config \
   --restart unless-stopped \
@@ -56,7 +56,7 @@ services:
       - PUID=1000
       - PGID=1000
       - TZ=Etc/UTC
-      - DOCKER_MODS=linuxserver/mods:code-server-nodejs|linuxserver/mods:code-server-nvm|linuxserver/mods:universal-docker|linuxserver/mods:code-server-python3|ghcr.io/gmcouto/gmcouto-code-server-docker-mods:code-server-ai-tools
+      - DOCKER_MODS=linuxserver/mods:code-server-nodejs|linuxserver/mods:code-server-nvm|linuxserver/mods:universal-docker|linuxserver/mods:code-server-python3|ghcr.io/gmcouto/code-server-ai-tools:latest
     volumes:
       - /path/to/config:/config
     ports:
@@ -67,5 +67,5 @@ services:
 
 ## My personal DOCKER_MODS value:
 ```
-DOCKER_MODS=linuxserver/mods:code-server-nodejs|linuxserver/mods:code-server-nvm|linuxserver/mods:universal-docker|linuxserver/mods:code-server-python3|ghcr.io/gmcouto/gmcouto-code-server-docker-mods:code-server-ai-tools
+DOCKER_MODS=linuxserver/mods:code-server-nodejs|linuxserver/mods:code-server-nvm|linuxserver/mods:universal-docker|linuxserver/mods:code-server-python3|ghcr.io/gmcouto/code-server-ai-tools:latest
 ```
