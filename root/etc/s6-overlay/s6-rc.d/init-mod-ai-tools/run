@@ -3,6 +3,20 @@
 echo "**** installing AI CLI tools ****"
 
 # ---------------------------------------------------------------------------
+# tmux  – persistent terminal sessions
+# ---------------------------------------------------------------------------
+if command -v tmux &>/dev/null; then
+    echo "**** tmux already installed, skipping ****"
+else
+    echo "**** installing tmux ****"
+    if command -v apt-get &>/dev/null; then
+        apt-get update -qq && apt-get install -y --no-install-recommends tmux
+    else
+        echo "**** apt-get not found – skipping tmux installation ****"
+    fi
+fi
+
+# ---------------------------------------------------------------------------
 # Locate npm
 # Priority: system npm (code-server-nodejs mod) → NVM-managed npm
 # ---------------------------------------------------------------------------

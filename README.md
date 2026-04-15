@@ -2,14 +2,22 @@
 
 A [Docker Mod](https://github.com/linuxserver/docker-mods) for the
 [linuxserver/code-server](https://hub.docker.com/r/linuxserver/code-server) container that
-installs the following AI CLI tools on every container start:
+installs the following tools on every container start:
+
+### Terminal utilities
+
+| Tool | Package | Description |
+|---|---|---|
+| [tmux](https://github.com/tmux/tmux) | `apt` | Terminal multiplexer for persistent terminal sessions |
+
+### AI CLI tools
 
 | Tool | Package | Description |
 |---|---|---|
 | [gemini-cli](https://github.com/google-gemini/gemini-cli) | `@google/gemini-cli` | Google Gemini in your terminal |
 | [claude-code](https://github.com/anthropics/claude-code) | `@anthropic-ai/claude-code` | Anthropic Claude agentic coding CLI |
 | [openclaude](https://github.com/Gitlawb/openclaude) | `@gitlawb/openclaude` | Open-source Claude-compatible coding agent CLI |
-| [cursor CLI](https://cursor.com/docs/cli/installation) | official installer | Cursor editor CLI (`cursor` command) |
+| [Cursor Agent CLI](https://cursor.com/docs/cli/installation) | official installer | Cursor editor CLI (`cursor-agent` command) |
 | [GitHub Copilot CLI](https://github.com/github/copilot-cli) | `@github/copilot` | GitHub Copilot in your terminal (`copilot` command) |
 | [OpenAI Codex CLI](https://github.com/openai/codex) | `@openai/codex` | OpenAI Codex local coding agent (`codex` command) |
 
@@ -20,7 +28,7 @@ installs the following AI CLI tools on every container start:
 
 ## Usage
 
-Add the mod to your `docker run` or `docker-compose.yml`:
+Just add the image of this repo `ghcr.io/gmcouto/gmcouto-code-server-docker-mods:code-server-ai-tools` to the `DOCKER_MODS` of your container environment variable. You can do it either on to your `docker run` or `docker-compose.yml`:
 
 ### docker run
 
@@ -56,29 +64,8 @@ services:
     restart: unless-stopped
 ```
 
----
 
-## Building & Publishing
-
-The GitHub Actions workflow (`.github/workflows/BuildImage.yml`) builds and pushes the image
-automatically on every push.
-
-### Required repository secrets
-
-| Secret | Description |
-|---|---|
-| `CR_USER` | Your GitHub username |
-| `CR_PAT` | GitHub Personal Access Token with `read:packages` and `write:packages` scopes |
-| `DOCKERUSER` | DockerHub username *(optional – only needed for DockerHub publishing)* |
-| `DOCKERPASS` | DockerHub password/token *(optional)* |
-
-The built image tag will be:
-
-```
-ghcr.io/gmcouto/gmcouto-code-server-docker-mods:code-server-ai-tools
-```
-
-My personal DOCKER_MODS value:
+## My personal DOCKER_MODS value:
 ```
 DOCKER_MODS=linuxserver/mods:code-server-nodejs|linuxserver/mods:code-server-nvm|linuxserver/mods:universal-docker|linuxserver/mods:code-server-python3|ghcr.io/gmcouto/gmcouto-code-server-docker-mods:code-server-ai-tools
 ```
