@@ -2,10 +2,8 @@ name: Build Image
 
 on:
   push:
-    tags:
-      - 'v*'
-  release:
-    types: [published]
+    branches:
+      - 'code-server-ai-tools'
   pull_request_target:
   workflow_dispatch:
     inputs:
@@ -35,9 +33,7 @@ jobs:
           echo "BASEIMAGE=${{ env.BASEIMAGE }}" >> $GITHUB_OUTPUT
           echo "MODNAME=${{ env.MODNAME }}" >> $GITHUB_OUTPUT
           echo "MULTI_ARCH=${{ env.MULTI_ARCH }}" >> $GITHUB_OUTPUT
-          if [[ "${{ github.event_name }}" == "release" || "${{ github.ref_type }}" == "tag" ]]; then
-            MOD_VERSION="${{ github.ref_name }}"
-          elif [[ -z "${{ env.MOD_VERSION }}" ]]; then
+          if [[ -z "${{ env.MOD_VERSION }}" ]]; then
             # **** If the mod needs to be versioned, set the versioning logic below. Otherwise leave as is. ****
             MOD_VERSION=""
           else
