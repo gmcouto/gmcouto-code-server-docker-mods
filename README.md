@@ -72,10 +72,9 @@ DOCKER_MODS=linuxserver/mods:code-server-nodejs|linuxserver/mods:code-server-nvm
 
 
 ## Tmux Support in code-server
-Add the following to your `~/.bashrc` so tmux command works as expected:
+Add the following to your `~/.tmux.conf` so tmux command works as expected:
 ```bash
-# tmux: wrap in script to allocate a PTY when running from a web shell
-tmux() { script -q -c "tmux $*" /dev/null; }
+set-option -g default-shell /bin/bash
 ```
 
 ## Stop Copilot Chat extension from nagging you
