@@ -69,3 +69,11 @@ services:
 ```
 DOCKER_MODS=linuxserver/mods:code-server-nodejs|linuxserver/mods:code-server-nvm|linuxserver/mods:universal-docker|linuxserver/mods:code-server-python3|ghcr.io/gmcouto/code-server-ai-tools:latest
 ```
+
+
+## Tmux Support in code-server
+Add the following to your `~/.bashrc` so tmux command works as expected:
+```bash
+# tmux: wrap in script to allocate a PTY when running from a web shell
+tmux() { script -q -c "tmux $*" /dev/null; }
+```
