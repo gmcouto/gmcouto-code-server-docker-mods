@@ -36,16 +36,16 @@ LOG_FILE="${LOG_FILE:-/tmp/container-startup.log}"
 
 # ── colour helpers ────────────────────────────────────────────────────────────
 RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'; NC='\033[0m'
-pass()  { echo -e "${GREEN}PASS${NC}: $1"; ((PASS++)); }
-fail()  { echo -e "${RED}FAIL${NC}: $1"; ((FAIL++)); }
-warn()  { echo -e "${YELLOW}WARN${NC}: $1"; ((WARN++)); }
+pass()  { echo -e "${GREEN}PASS${NC}: $1"; PASS=$(( PASS + 1 )); }
+fail()  { echo -e "${RED}FAIL${NC}: $1"; FAIL=$(( FAIL + 1 )); }
+warn()  { echo -e "${YELLOW}WARN${NC}: $1"; WARN=$(( WARN + 1 )); }
 banner(){ echo; echo "=== $* ==="; }
 
 # ── cleanup on exit ───────────────────────────────────────────────────────────
 cleanup() {
     banner "Cleanup"
     if docker ps -a -q --filter "name=${CONTAINER_NAME}" | grep -q .; then
-        docker logs "${CONTAINER_NAME}" 2>&1 > "${LOG_FILE}" || true
+        docker logs "${CONTAINER_NAME}" > "${LOG_FILE}" 2>&1 || true
         echo "Container startup log saved to: ${LOG_FILE}"
         if [ "${FAIL}" -gt 0 ]; then
             echo "Failures detected — dumping last 80 lines of container log:"
@@ -126,7 +126,7 @@ check_warn() {
 banner "Running checks"
 
 # Capture log now for the apt-lock check
-docker logs "${CONTAINER_NAME}" 2>&1 > "${LOG_FILE}" || true
+docker logs "${CONTAINER_NAME}" > "${LOG_FILE}" 2>&1 || true
 
 # ── regression: no APT lock collision ────────────────────────────────────────
 # Check this first — if there's a lock collision the other checks may lie.
