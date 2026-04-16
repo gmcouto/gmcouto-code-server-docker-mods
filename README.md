@@ -21,8 +21,9 @@ installs the following tools on every container start:
 | [GitHub Copilot CLI](https://github.com/github/copilot-cli) | `@github/copilot` | GitHub Copilot in your terminal (`copilot` command) |
 | [OpenAI Codex CLI](https://github.com/openai/codex) | `@openai/codex` | OpenAI Codex local coding agent (`codex` command) |
 
-> **Prerequisites** – this mod relies on Node.js/npm being available at container startup.
-> Use it alongside the **`linuxserver/mods:code-server-nodejs`** or **`linuxserver/mods:code-server-nvm`** mod.
+> **Required** – this mod depends on **`linuxserver/mods:code-server-nvm`** and must be loaded alongside it.
+> The s6 init graph hard-depends on `init-mod-code-server-nvm-install`, so NVM and its bundled npm
+> are guaranteed to be ready before AI tool installation begins.
 
 ---
 
@@ -38,7 +39,7 @@ docker run -d \
   -e PUID=1000 \
   -e PGID=1000 \
   -e TZ=Etc/UTC \
-  -e DOCKER_MODS=linuxserver/mods:code-server-nodejs|ghcr.io/gmcouto/code-server-ai-tools:latest \
+  -e DOCKER_MODS=linuxserver/mods:code-server-nvm|ghcr.io/gmcouto/code-server-ai-tools:latest \
   -p 8443:8443 \
   -v /path/to/config:/config \
   --restart unless-stopped \

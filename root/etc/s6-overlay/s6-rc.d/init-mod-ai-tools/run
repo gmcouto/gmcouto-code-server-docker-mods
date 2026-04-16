@@ -7,43 +7,22 @@ echo "**** installing AI CLI tools ****"
 # This service runs after init-mods-package-install, so they are available.
 
 # ---------------------------------------------------------------------------
-# Locate npm
-# Priority: system npm (code-server-nodejs mod) → NVM-managed npm
-#
-# init-mod-code-server-nvm-install runs concurrently with this service (both
-# depend on init-mods-package-install).  On a fresh container NVM may still
-# be cloning its repo and downloading node when we start, so we poll for up
-# to 3 minutes before giving up.
+# Locate npm via NVM
+# This service depends on init-mod-code-server-nvm-install, so NVM and its
+# default node (which bundles npm) are guaranteed to be ready by now.
 # ---------------------------------------------------------------------------
-NPM_BIN=""
-NPM_TIMEOUT=180
-NPM_ELAPSED=0
+# shellcheck source=/dev/null
+source "${HOME}/.nvm/nvm.sh"
 
-while [ -z "${NPM_BIN}" ]; do
-    if command -v npm &>/dev/null; then
-        NPM_BIN="npm"
-    elif [ -s "${HOME}/.nvm/nvm.sh" ]; then
-        # shellcheck source=/dev/null
-        source "${HOME}/.nvm/nvm.sh"
-        if command -v npm &>/dev/null; then
-            NPM_BIN="npm"
-        fi
-    fi
-
-    [ -n "${NPM_BIN}" ] && break
-
-    if [ "${NPM_ELAPSED}" -ge "${NPM_TIMEOUT}" ]; then
-        break
-    fi
-
-    echo "**** npm not ready yet; waiting (${NPM_ELAPSED}/${NPM_TIMEOUT}s) ****"
-    sleep 10
-    NPM_ELAPSED=$(( NPM_ELAPSED + 10 ))
-done
+if command -v npm &>/dev/null; then
+    NPM_BIN="npm"
+else
+    echo "**** npm not found – is linuxserver/mods:code-server-nvm loaded? ****"
+    NPM_BIN=""
+fi
 
 if [ -z "${NPM_BIN}" ]; then
-    echo "**** npm not found after ${NPM_TIMEOUT}s – skipping npm-based installations ****"
-    echo "**** Make sure code-server-nodejs or code-server-nvm mod is loaded ****"
+    echo "**** skipping npm-based installations ****"
 else
     # -----------------------------------------------------------------------
     # gemini-cli  (https://github.com/google-gemini/gemini-cli)
