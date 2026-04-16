@@ -26,14 +26,12 @@ POLL_INTERVAL=10
 
 PASS=0
 FAIL=0
-WARN=0
 LOG_FILE="${LOG_FILE:-/tmp/container-startup-local.log}"
 
 # ── colour helpers ────────────────────────────────────────────────────────────
-RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'; NC='\033[0m'
+RED='\033[0;31m'; GREEN='\033[0;32m'; NC='\033[0m'
 pass()  { echo -e "${GREEN}PASS${NC}: $1"; PASS=$(( PASS + 1 )); }
 fail()  { echo -e "${RED}FAIL${NC}: $1"; FAIL=$(( FAIL + 1 )); }
-warn()  { echo -e "${YELLOW}WARN${NC}: $1"; WARN=$(( WARN + 1 )); }
 banner(){ echo; echo "=== $* ==="; }
 
 # ── cleanup on exit ───────────────────────────────────────────────────────────
@@ -120,15 +118,6 @@ check_fail() {
         fail "${desc}"
     fi
 }
-check_warn() {
-    local desc="$1"; shift
-    if docker exec "${CONTAINER_NAME}" bash -c "$*" >/dev/null 2>&1; then
-        pass "${desc}"
-    else
-        warn "${desc} (non-critical)"
-    fi
-}
-
 # ── checks ────────────────────────────────────────────────────────────────────
 banner "Running checks"
 
@@ -161,13 +150,12 @@ check_fail "tmux installed (via mod Phase 1)"    "dpkg -l tmux   | grep -q '^ii'
 NVM_INIT="NVM_DIR=/config/.nvm source /config/.nvm/nvm.sh"
 check_fail "claude-code binary present"  "${NVM_INIT} && command -v claude"
 check_fail "claude-code executes"        "${NVM_INIT} && claude --version"
-check_warn "gemini-cli binary present"   "${NVM_INIT} && command -v gemini"
-check_warn "cursor-agent binary present" "command -v cursor-agent"
+check_fail "gemini-cli binary present"   "${NVM_INIT} && command -v gemini"
+check_fail "cursor-agent binary present" "command -v cursor-agent"
 
 # ── summary ───────────────────────────────────────────────────────────────────
 banner "Results"
 echo -e "  ${GREEN}Passed${NC} : ${PASS}"
-echo -e "  ${YELLOW}Warned${NC} : ${WARN} (non-critical, not counted as failures)"
 echo -e "  ${RED}Failed${NC} : ${FAIL}"
 
 if [ "${FAIL}" -gt 0 ]; then
