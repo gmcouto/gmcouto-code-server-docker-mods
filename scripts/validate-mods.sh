@@ -161,9 +161,13 @@ check_fail "screen installed (via mod Phase 1)"  "dpkg -l screen | grep -q '^ii'
 check_fail "tmux installed (via mod Phase 1)"    "dpkg -l tmux   | grep -q '^ii'"
 
 # ── our mod: Phase 2 npm tools ───────────────────────────────────────────────
-check_fail "claude-code binary present"  "command -v claude"
-check_fail "claude-code executes"        "claude --version"
-check_warn "gemini-cli binary present"   "command -v gemini"
+# npm globals are in the NVM node bin dir, only on PATH after sourcing nvm.sh.
+# docker exec runs as root (HOME=/root), so we must use the explicit path and
+# set NVM_DIR so nvm.sh can find the installed node versions.
+NVM_INIT="NVM_DIR=/config/.nvm source /config/.nvm/nvm.sh"
+check_fail "claude-code binary present"  "${NVM_INIT} && command -v claude"
+check_fail "claude-code executes"        "${NVM_INIT} && claude --version"
+check_warn "gemini-cli binary present"   "${NVM_INIT} && command -v gemini"
 check_warn "cursor-agent binary present" "command -v cursor-agent"
 
 # ── summary ───────────────────────────────────────────────────────────────────
