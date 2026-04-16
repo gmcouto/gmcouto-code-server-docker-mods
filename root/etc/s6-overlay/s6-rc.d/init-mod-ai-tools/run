@@ -2,33 +2,9 @@
 
 echo "**** installing AI CLI tools ****"
 
-# ---------------------------------------------------------------------------
-# screen  – requirement for tmux
-# ---------------------------------------------------------------------------
-if command -v screen &>/dev/null; then
-    echo "**** screen already installed, skipping ****"
-else
-    echo "**** installing screen ****"
-    if command -v apt-get &>/dev/null; then
-        apt-get update -qq && apt-get install -y --no-install-recommends screen
-    else
-        echo "**** apt-get not found – skipping screen installation ****"
-    fi
-fi
-
-# ---------------------------------------------------------------------------
-# tmux  – persistent terminal sessions
-# ---------------------------------------------------------------------------
-if command -v tmux &>/dev/null; then
-    echo "**** tmux already installed, skipping ****"
-else
-    echo "**** installing tmux ****"
-    if command -v apt-get &>/dev/null; then
-        apt-get update -qq && apt-get install -y --no-install-recommends tmux
-    else
-        echo "**** apt-get not found – skipping tmux installation ****"
-    fi
-fi
+# Note: screen and tmux are registered for batch installation by
+# init-mod-ai-tools-packages and installed by init-mods-package-install.
+# This service runs after init-mods-package-install, so they are available.
 
 # ---------------------------------------------------------------------------
 # Locate npm

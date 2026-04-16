@@ -12,6 +12,7 @@ on:
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.head.repo.full_name || github.repository }}-${{ github.event.pull_request.head.ref || github.ref_name }}
   cancel-in-progress: true
+
 env:
   IMAGE: ghcr.io/gmcouto/code-server-ai-tools
 
@@ -20,7 +21,11 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      packages: write
       actions: write
+    # Push the sha-tagged image to GHCR on every non-fork run so the validate
+    # job can pull it via the linuxserver mod-init system (which only supports
+    # ghcr.io / lscr.io / Docker Hub — local registries are not supported).
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -28,41 +33,54 @@ jobs:
       - name: Build image
         run: docker build -t ${{ env.IMAGE }}:${{ github.sha }} .
 
-      - name: Export image as tarball
-        if: startsWith(github.ref, 'refs/tags/')
-        run: docker save ${{ env.IMAGE }}:${{ github.sha }} | gzip > /tmp/image.tar.gz
+      - name: Log in to GitHub Container Registry
+        # Skip for fork PRs — they cannot push to the repo's GHCR namespace
+        if: github.event.pull_request.head.repo.full_name == github.repository || github.event_name != 'pull_request'
+        run: echo "${{ github.token }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-      - name: Upload image artifact
-        if: startsWith(github.ref, 'refs/tags/')
+      - name: Push sha-tagged image to GHCR
+        if: github.event.pull_request.head.repo.full_name == github.repository || github.event_name != 'pull_request'
+        run: docker push ${{ env.IMAGE }}:${{ github.sha }}
+
+  validate:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    # Only runs when a sha-tagged image was pushed to GHCR (i.e. non-fork runs)
+    if: github.event.pull_request.head.repo.full_name == github.repository || github.event_name != 'pull_request'
+    permissions:
+      contents: read
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Run mod integration validation
+        # IMAGE_TAG is the sha of the commit; the mod-init system will pull
+        # gmcouto/code-server-ai-tools:<sha> from ghcr.io automatically.
+        run: IMAGE_TAG=${{ github.sha }} ./scripts/validate-mods.sh
+
+      - name: Upload container log on failure
+        if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: docker-image
-          path: /tmp/image.tar.gz
-          retention-days: 1
+          name: container-startup-log
+          path: /tmp/container-startup.log
+          retention-days: 7
 
   publish:
     if: startsWith(github.ref, 'refs/tags/')
-    needs: build
+    needs: [build, validate]
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
-      actions: read
     steps:
-      - name: Download image artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: docker-image
-          path: /tmp
-
-      - name: Load image
-        run: docker load < /tmp/image.tar.gz
-
       - name: Log in to GitHub Container Registry
         run: echo "${{ github.token }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-      - name: Tag and push release image
+      - name: Pull sha-tagged image and retag as release
         run: |
+          docker pull ${{ env.IMAGE }}:${{ github.sha }}
           TAG=${GITHUB_REF#refs/tags/}
           docker tag ${{ env.IMAGE }}:${{ github.sha }} ${{ env.IMAGE }}:${TAG}
           docker push ${{ env.IMAGE }}:${TAG}

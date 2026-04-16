@@ -1,0 +1,5 @@
+#!/usr/bin/with-contenv bash
+
+echo "**** Registering AI tools system packages (screen, tmux) ****"
+echo "screen" >> /mod-repo-packages-to-install.list
+echo "tmux"   >> /mod-repo-packages-to-install.list
