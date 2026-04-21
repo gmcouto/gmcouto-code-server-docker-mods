@@ -81,7 +81,7 @@ set-option -g default-shell /bin/bash
 set -g mouse on
 ```
 
-Then install `tmux-integrated` extension, if you want the UI to integrate to your CLI tools.
+Then install `tmux-integrated` extension, if you want the UI to integrate to your CLI tools (not really necessary).
 
 ### 2. Stop Copilot Chat extension from nagging you
 Using copilot-chat extension, login to github. Then run this in the browser console with `code-server` tab open, then restart the page, so the copilot-chat consider itself properly setup:
