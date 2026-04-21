@@ -144,6 +144,7 @@ check_fail "screen installed (via mod Phase 1)"  "dpkg -l screen | grep -q '^ii'
 check_fail "tmux installed (via mod Phase 1)"    "dpkg -l tmux   | grep -q '^ii'"
 check_fail "fd-find installed (via mod Phase 1)" "dpkg -l fd-find | grep -q '^ii'"
 check_fail "ripgrep installed (via mod Phase 1)" "dpkg -l ripgrep | grep -q '^ii'"
+check_fail "fzf installed (via mod Phase 1)"     "dpkg -l fzf     | grep -q '^ii'"
 
 # ── our mod: Phase 2 npm tools ───────────────────────────────────────────────
 # npm globals are in the NVM node bin dir, only on PATH after sourcing nvm.sh.

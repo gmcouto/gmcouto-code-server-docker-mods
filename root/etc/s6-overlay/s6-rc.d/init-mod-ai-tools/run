@@ -2,7 +2,7 @@
 
 echo "**** installing AI CLI tools ****"
 
-# Note: screen, tmux, fd-find and ripgrep are registered for batch installation by
+# Note: screen, tmux, fd-find, ripgrep and fzf are registered for batch installation by
 # init-mod-ai-tools-packages and installed by init-mods-package-install.
 # This service runs after init-mods-package-install, so they are available.
 

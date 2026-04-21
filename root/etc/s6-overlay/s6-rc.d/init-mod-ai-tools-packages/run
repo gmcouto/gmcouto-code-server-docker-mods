@@ -1,7 +1,8 @@
 #!/usr/bin/with-contenv bash
 
-echo "**** Registering AI tools system packages (screen, tmux, fd-find, ripgrep) ****"
+echo "**** Registering AI tools system packages (screen, tmux, fd-find, ripgrep, fzf) ****"
 echo "screen" >> /mod-repo-packages-to-install.list
 echo "tmux"   >> /mod-repo-packages-to-install.list
 echo "fd-find" >> /mod-repo-packages-to-install.list
 echo "ripgrep" >> /mod-repo-packages-to-install.list
+echo "fzf"    >> /mod-repo-packages-to-install.list
