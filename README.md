@@ -57,7 +57,7 @@ services:
       - PUID=1000
       - PGID=1000
       - TZ=Etc/UTC
-      - DOCKER_MODS=linuxserver/mods:code-server-nvm|linuxserver/mods:universal-docker|linuxserver/mods:code-server-python3|ghcr.io/gmcouto/code-server-ai-tools:latest
+      - DOCKER_MODS=linuxserver/mods:code-server-nvm|ghcr.io/gmcouto/code-server-ai-tools:latest
     volumes:
       - /path/to/config:/config
     ports:
