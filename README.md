@@ -8,7 +8,7 @@ installs the following tools on every container start:
 
 | Tool | Package | Description |
 |---|---|---|
-| [tmux](https://github.com/tmux/tmux) | `apt` | Terminal multiplexer for persistent terminal sessions |
+| [tmux](https://github.com/tmux/tmux) | `apt` (`tmux`) | Terminal multiplexer for persistent terminal sessions |
 | [fd](https://github.com/sharkdp/fd) | `apt` (`fd-find`) | Fast and user-friendly alternative to `find` |
 | [ripgrep](https://github.com/BurntSushi/ripgrep) | `apt` (`ripgrep`) | Fast recursive text search (`rg`) |
 
